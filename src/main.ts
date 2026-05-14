@@ -17,8 +17,9 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') ?? 3000;
+  const host = configService.get<string>('HOST') ?? '0.0.0.0';
 
   app.setGlobalPrefix('api');
-  await app.listen(port);
+  await app.listen(port, host);
 }
 bootstrap();
