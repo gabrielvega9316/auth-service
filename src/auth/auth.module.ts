@@ -8,6 +8,9 @@ import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
 import { JwtStrategy } from './jwt.strategy';
 import { S3Module } from 'src/s3/s3.module';
+import { SnsEventsPublisher } from 'src/aws/sns-events.publisher';
+import { SqsClientService } from 'src/aws/sqs.client';
+import { UserCreatedConsumer } from 'src/aws/user-created.consumer';
 
 @Module({
   imports: [
@@ -32,6 +35,12 @@ import { S3Module } from 'src/s3/s3.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    SnsEventsPublisher,
+    SqsClientService,
+    UserCreatedConsumer,
+  ],
 })
 export class AuthModule {}

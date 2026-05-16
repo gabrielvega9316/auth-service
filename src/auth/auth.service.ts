@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User, UsersService } from 'src/users/users.service';
+import { SnsEventsPublisher } from 'src/aws/sns-events.publisher';
 
 export interface JwtPayload {
   sub: number;
@@ -18,11 +19,17 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly snsEventsPublisher: SnsEventsPublisher,
   ) {}
 
   async register(email: string, password: string) {
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await this.usersService.create(email, passwordHash);
+
+    await this.snsEventsPublisher.publishUserCreated({
+      userId: user.id,
+      email: user.email,
+    });
 
     return this.buildAuthResponse(user);
   }
